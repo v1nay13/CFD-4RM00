@@ -1,5 +1,5 @@
-#define NPI        270        /* number of grid cells in x-direction [-] (multiples of XMAX) */
-#define NPJ        120        /* number of grid cells in y-direction [-] (multiples of YMAX)*/
+#define NPI        100        /* number of grid cells in x-direction [-]  */
+#define NPJ        50        /* number of grid cells in y-direction [-] */
 #define XMAX       0.270      /* width of the domain [m] */ 
 #define YMAX       0.120      /* height of the domain [m] */
 #define PI         3.1415927 /* value of pi [-] */
