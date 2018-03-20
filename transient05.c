@@ -200,7 +200,9 @@ void bound(void)
 /* ################################################################# */
 {
 /***** Purpose: Specify boundary conditions for a calculation ******/
-	int    I, J, j;
+	int    I, J, j, column, row;
+
+	float distance_x, distance_y					// distance from origin to point.
 
 	/* Fixed temperature at the upper and lower wall */
 
@@ -212,24 +214,58 @@ void bound(void)
 
 	for (I = 0; I <= NPI + 1; I++) {
 		/* Temperature at the walls in Kelvin */
-		T[I][0] = 273.; /* bottom wall */
-		T[I][NPJ+1] = 273.; /* top wall */
+		T[I][0] = 300.; /* bottom wall */
+		T[I][NPJ+1] = 300.; /* top wall */
 	} /* for J */
 
-	// Fixed temperature around the diameter of the 
 
-	counter = 1;
-	d = 0
+	
+	// Fixed temperature around the diameter of the tube. ***Author : vinay
 
-	for ( i = 0; i = NPI + 1, i++) 		//loop for x coordinate
+	for ( column = 0; column <= 4; column++)	//tube column loop
+	{	
+		if ( column == 0 || column == 2 )
 		{
-		for ( j = 0; j = NPJ + 1; j++)
+		for ( row = 0; row <= 2; row++)			// tube row in the column loop
 		{
-			int distance_x = DISTANCE.
+			distance_x = DISTANCE_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
+			distance_y = Distance_begin_y0 + (row*Seperation_y);	//Distance of center in Y coord from origin
 
+			for ( i = 0; i = NPI + 1, i++) 		//loop for x coordinate
+			{
+				for ( j = 0; j = NPJ + 1; j++)	//loop for y coordinate
+				{
+					if ( x[i] == distance_x && y[i] == distance_y)
+					{
+						updateTemp(i,j);
+					}
+				}
+			}
+		}
+		}
 
+		if ( column == 1 || column == 3 )
+		{
+		for ( row = 0; row <= 3; row++)			// tube row in the column loop
+		{
+			distance_x = DISTANCE_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
+			distance_y = Distance_begin_y1 + (row*Seperation_y);	//Distance of center in Y coord from origin
 
+			for ( i = 0; i = NPI + 1, i++) 		//loop for x coordinate
+			{
+				for ( j = 0; j = NPJ + 1; j++)	//loop for y coordinate
+				{
+					if ( x[i] == distance_x && y[j] == distance_y)
+					{
+						updateTemp(i,j);
+					}
+				}
+			}
+		}	
+	 	}
+	} // end tube boundary
 
+	
 
 	globcont();
 
@@ -254,6 +290,32 @@ void bound(void)
 	} /* for J */
 
 } /* bound */
+
+
+/*################################################################# Author : Vinay */
+void updateTemp (int X, int Y,)
+/*################################################################# */
+{
+/**** Purpose : Update the temperature of tube to boundary conditions *****/
+	int i,j;
+	double sep; //separation between center of tube and boundary of same tube	
+
+	for ( i = 0; i < NPI + 2; i++)
+	{
+		for ( j = 0; j < NPJ +2; j++)
+		{
+			sep = sqrt(((x[X] - x[i])*(x[X] - x[i])) + ((y[Y] - y[j])*(y[Y] - y[j])));
+
+			if ( sep <= Radius )
+			{
+				T[i][j] = 500.; // Tube temperature
+			}
+		}
+
+	}
+
+}	/* updateTemp */
+
 
 /* ################################################################# */
 void globcont(void)
