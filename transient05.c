@@ -200,9 +200,9 @@ void bound(void)
 /* ################################################################# */
 {
 /***** Purpose: Specify boundary conditions for a calculation ******/
-	int    I, J, j, column, row;
+	int    I, J, j, column, row, nRow;
 
-	float distance_x, distance_y, d;					// distance from origin to point.
+	float distance_x, distance_y, d, distance_begin_y;					// distance from origin to point.
 
 	/* Fixed temperature at the upper and lower wall */
 
@@ -228,9 +228,19 @@ void bound(void)
 
 		if ( column == 0 || column == 2 )
 		{
-		for ( row = 0; row <= 2; row++)			// tube row in the column loop
+			nRow = 2;
+			distance_begin_y = Distance_begin_y0;
+		}
+
+		else
 		{
-			distance_y = Distance_begin_y0 + (row*Seperation_y);	//Distance of center in Y coord from origin
+			nRow = 3;
+			distance_begin_y = Distance_begin_y1;
+		}
+
+		for ( row = 0; row <= nRow; row++)			// tube row in the column loop
+		{
+			distance_y = Distance_begin_y + (row*Seperation_y);	//Distance of center in Y coord from origin
 
 			for ( i = 0; i = NPI + 1, i++) 		//loop for x coordinate
 			{
@@ -245,29 +255,7 @@ void bound(void)
 				}
 			}
 		}
-		}
-
-		if ( column == 1 || column == 3 )
-		{
-		for ( row = 0; row <= 3; row++)			// tube row in the column loop
-		{	
-			distance_y = Distance_begin_y1 + (row*Seperation_y);	//Distance of center in Y coord from origin
-
-			for ( i = 0; i = NPI + 1, i++) 		//loop for x coordinate
-			{
-				for ( j = 0; j = NPJ + 1; j++)	//loop for y coordinate
-				{
-					d = sqrt(((distance_x - x[i])*(distance_x - x[i])) + ((distance_y - y[j])*(distance_y - y[j])));
-
-					if ( d <= Radius )
-					{
-						T[i][j] == 500.; // Tube temperature
-					}
-				}
-			}
-		}	
-	 	}
-	} // end tube boundary
+		} // end tube temperature boundary
 
 	
 
