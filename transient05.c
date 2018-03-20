@@ -202,7 +202,7 @@ void bound(void)
 /***** Purpose: Specify boundary conditions for a calculation ******/
 	int    I, J, j, column, row;
 
-	float distance_x, distance_y					// distance from origin to point.
+	float distance_x, distance_y, d;					// distance from origin to point.
 
 	/* Fixed temperature at the upper and lower wall */
 
@@ -224,20 +224,23 @@ void bound(void)
 
 	for ( column = 0; column <= 4; column++)	//tube column loop
 	{	
+		distance_x = DISTANCE_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
+
 		if ( column == 0 || column == 2 )
 		{
 		for ( row = 0; row <= 2; row++)			// tube row in the column loop
 		{
-			distance_x = DISTANCE_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
 			distance_y = Distance_begin_y0 + (row*Seperation_y);	//Distance of center in Y coord from origin
 
 			for ( i = 0; i = NPI + 1, i++) 		//loop for x coordinate
 			{
 				for ( j = 0; j = NPJ + 1; j++)	//loop for y coordinate
 				{
-					if ( x[i] == distance_x && y[i] == distance_y)
+					d = sqrt(((distance_x - x[i])*(distance_x - x[i])) + ((distance_y - y[j])*(distance_y - y[j])));
+
+					if ( d <= Radius )
 					{
-						updateTemp(i,j);
+						T[i][j] == 500.; // Tube temperature
 					}
 				}
 			}
@@ -247,17 +250,18 @@ void bound(void)
 		if ( column == 1 || column == 3 )
 		{
 		for ( row = 0; row <= 3; row++)			// tube row in the column loop
-		{
-			distance_x = DISTANCE_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
+		{	
 			distance_y = Distance_begin_y1 + (row*Seperation_y);	//Distance of center in Y coord from origin
 
 			for ( i = 0; i = NPI + 1, i++) 		//loop for x coordinate
 			{
 				for ( j = 0; j = NPJ + 1; j++)	//loop for y coordinate
 				{
-					if ( x[i] == distance_x && y[j] == distance_y)
+					d = sqrt(((distance_x - x[i])*(distance_x - x[i])) + ((distance_y - y[j])*(distance_y - y[j])));
+
+					if ( d <= Radius )
 					{
-						updateTemp(i,j);
+						T[i][j] == 500.; // Tube temperature
 					}
 				}
 			}
@@ -291,30 +295,6 @@ void bound(void)
 
 } /* bound */
 
-
-/*################################################################# Author : Vinay */
-void updateTemp (int X, int Y,)
-/*################################################################# */
-{
-/**** Purpose : Update the temperature of tube to boundary conditions *****/
-	int i,j;
-	double sep; //separation between center of tube and boundary of same tube	
-
-	for ( i = 0; i < NPI + 2; i++)
-	{
-		for ( j = 0; j < NPJ +2; j++)
-		{
-			sep = sqrt(((x[X] - x[i])*(x[X] - x[i])) + ((y[Y] - y[j])*(y[Y] - y[j])));
-
-			if ( sep <= Radius )
-			{
-				T[i][j] = 500.; // Tube temperature
-			}
-		}
-
-	}
-
-}	/* updateTemp */
 
 
 /* ################################################################# */

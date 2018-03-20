@@ -9,7 +9,6 @@ extern void gridbound(void);
 extern void init(void);
 
 extern void bound(void);
-extern void updateTemp (int X, int Y);
 extern void globcont(void);
 extern void derivatives(void);
 
