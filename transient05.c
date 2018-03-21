@@ -231,43 +231,49 @@ void bound(struct Tubes *tubes)
 	
 		// Fixed temperature of Tubes. ***added code
 
-	for ( column = 0; column <= 4; column++)	//tube column loop
-	{	
-		distance_x = Distance_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
+	
+		for ( column = 0; column <= 4; column++)	//tube column loop
+			{	
+				distance_x = Distance_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
 
-		if ( column == 0 || column == 2 )
-		{
-			nRow = 2;
-			distance_begin_y = Distance_begin_y0;
-		}
-
-		else
-		{
-			nRow = 3;
-			distance_begin_y = Distance_begin_y1;
-		}
-
-		for ( row = 0; row <= nRow; row++)			// tube row in the column loop
-		{
-			distance_y = distance_begin_y + (row*Separation_y);	//Distance of center in Y coord from origin
-
-			for ( i = 0; i < NPI + 1; i++) 		//loop for x coordinate
-			{
-				for ( j = 0; j < NPJ + 1; j++)	//loop for y coordinate
+				if ( column == 0 || column == 2 )
 				{
-					d = sqrt(((distance_x - x[i])*(distance_x - x[i])) + ((distance_y - y[j])*(distance_y - y[j])));
+					nRow = 2;
+					distance_begin_y = Distance_begin_y0;
+				}
 
-					if ( d <= Radius )
+				else
+				{
+					nRow = 3;
+					distance_begin_y = Distance_begin_y1;
+				}
+
+				for ( row = 0; row <= nRow; row++)			// tube row in the column loop
+				{
+					distance_y = distance_begin_y + (row*Separation_y);	//Distance of center in Y coord from origin
+
+					if (distance_x < Distance_end_x && distance_y < Distance_end_y)
 					{
-						T[i][j] = 500.; // Tube temperature
-						tubes->a[i] = i;
-						tubes->b[j]	= j;
-						
+						for ( i = 0; i < NPI + 1; i++) 		//loop for x coordinate
+						{
+							for ( j = 0; j < NPJ + 1; j++)	//loop for y coordinate
+							{
+								d = sqrt(((distance_x - x[i])*(distance_x - x[i])) + ((distance_y - y[j])*(distance_y - y[j])));
+
+								if ( d <= Radius )
+								{
+									T[i][j] = 500.; // Source Term of velocity at that node
+									tubes->a[i] = i;
+									tubes->b[j]	= j;
+								}
+							}
+						}
 					}
 				}
-			}
-		}
-	} // end tube temperature boundary	
+			} // end tube temperature boundary
+
+
+
 
 	globcont();
 
@@ -674,6 +680,9 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 
 			Su[I][j] *= AREAw*AREAs;
 
+
+
+
 			/* The coefficients (hybrid differencing scheme) */
 
 			aW[I][j] = max3( Fw, Dw + 0.5*Fw, 0.);
@@ -681,13 +690,14 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			aS[I][j] = max3( Fs, Ds + 0.5*Fs, 0.);
 			aN[I][j] = max3(-Fn, Dn - 0.5*Fn, 0.);
 			aPold    = 0.5*(rho[I][J-1] + rho[I][J])*AREAe*AREAn/Dt;
-
+			
 			if ( tubes->a[I] > 0 && tubes->b[j] > 0  )															//magic
 				{
 					aW[I][j] = 0;
 					aE[I][j] = 0;
 
 				}
+
 
 			/* eq. 8.31 without time dependent terms (see also eq. 5.14): */
 

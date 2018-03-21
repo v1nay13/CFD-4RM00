@@ -15,7 +15,7 @@
 #define LARGE      1E30      /* arbitrary very large value [-] */
 #define SMALL      1E-30     /* arbitrary very small value [-] */
 #define P_ATM      101000.   /* athmospheric pressure [Pa] */
-#define U_IN       43.0       /* in flow velocity [m/s] */
+#define U_IN       5.0       /* in flow velocity [m/s] */
 
 #define Cmu        0.09
 #define sigmak       1.
@@ -34,4 +34,5 @@
 #define Distance_begin_x   62.5 	// space before first tube [m], not from center
 #define Distance_begin_y0  42.5   // first row starting
 #define Distance_begin_y1  25	// second row starting
+#define Distance_end_y		90
 #define Distance_end_x     75	// distance from last tube [m], not from center
