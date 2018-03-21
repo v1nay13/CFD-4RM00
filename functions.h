@@ -4,16 +4,18 @@
 #define min2(a,b)   (a < b ? a : b)
 #define min3(a,b,c) (a < b ? min2(a,c) : min2(b,c))
 
+
+
 extern void grid(void);
 extern void gridbound(void);
 extern void init(void);
 
-extern void bound(void);
+extern void bound( struct Tubes *);
 extern void globcont(void);
 extern void derivatives(void);
 
-extern void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);
-extern void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);
+extern void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b, struct Tubes *);
+extern void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b, struct Tubes *);
 extern void pccoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);
 extern void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);
 extern void epscoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);

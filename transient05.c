@@ -14,6 +14,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+struct Tubes{
+
+	int a[1000];
+	int b[1000];
+};
+
 #include "variables.h"
 #include "constants.h"
 #include "functions.h"
@@ -25,23 +32,25 @@ int main(int argc, char *argv[])
 	int    iter_u, iter_v, iter_pc, iter_T, iter_eps, iter_k;
 	double du, dv, time, TOTAL_TIME = 10.;
 	
+	struct Tubes tubes;
+
 	init();
-	bound(); /* apply boundary conditions */
+	bound(&tubes); /* apply boundary conditions */
 
 	for (time = Dt; time <= TOTAL_TIME; time += Dt) {
 		iter = 0; 
 		while (iter < MAX_ITER && SMAX > SMAXneeded && SAVG > SAVGneeded) { /* outer iteration loop */
 
 			derivatives();
-			ucoeff(aE, aW, aN, aS, aP, b);
+			ucoeff(aE, aW, aN, aS, aP, b, &tubes);
 			for (iter_u = 0; iter_u < U_ITER; iter_u++)
 				solve(u, b, aE, aW, aN, aS, aP);
 
-			vcoeff(aE, aW, aN, aS, aP, b);
+			vcoeff(aE, aW, aN, aS, aP, b, &tubes);
 			for (iter_v = 0; iter_v < V_ITER; iter_v++)
 				solve(v, b, aE, aW, aN, aS, aP);
 
-			bound();
+			bound(&tubes);
 			pccoeff(aE, aW, aN, aS, aP, b);
 			for (iter_pc = 0; iter_pc < PC_ITER; iter_pc++)
 				solve(pc, b, aE, aW, aN, aS, aP);
@@ -62,7 +71,7 @@ int main(int argc, char *argv[])
 
 			viscosity();
 
-			bound();
+			bound(&tubes);
 			storeresults(); /* Store data at current time level in arrays for "old" data*/
 
 			iter++;
@@ -196,7 +205,7 @@ void init(void)
 } /* init */
 
 /* ################################################################# */
-void bound(void)
+void bound(struct Tubes *tubes)
 /* ################################################################# */
 {
 /***** Purpose: Specify boundary conditions for a calculation ******/
@@ -220,7 +229,7 @@ void bound(void)
 
 
 	
-	// Fixed temperature of Tubes. ***added code
+		// Fixed temperature of Tubes. ***added code
 
 	for ( column = 0; column <= 4; column++)	//tube column loop
 	{	
@@ -251,13 +260,14 @@ void bound(void)
 					if ( d <= Radius )
 					{
 						T[i][j] = 500.; // Tube temperature
+						tubes->a[i] = i;
+						tubes->b[i]	= j;
+						
 					}
 				}
 			}
 		}
-	} // end tube temperature boundary
-
-	
+	} // end tube temperature boundary	
 
 	globcont();
 
@@ -282,7 +292,6 @@ void bound(void)
 	} /* for J */
 
 } /* bound */
-
 
 
 /* ################################################################# */
@@ -495,7 +504,7 @@ void conv(void)
 } /* conv */
 
 /* ################################################################# */
-void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b)
+void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b, struct Tubes *tubes)
 /* ################################################################# */
 {
 /***** Purpose: To calculate the coefficients for the u equation. ******/
@@ -558,7 +567,11 @@ void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			           (mun        *dvdx[i][j+1] - mus        *dvdx[i][j]) / (y_v[j+1] - y_v[j]) -
                        2./3. * (rho[I][J]*k[I][J] - rho[I-1][J]*k[I-1][J])/(x[I] - x[I-1]);
 			Su[I][j] *= AREAw*AREAs;
-			
+
+			if ( i == tubes->a[i] && J == tubes->b[J] )															//magic
+			{
+				SP[i][J] = -LARGE;
+			}
 			/* The coefficients (hybrid differencing sheme) */
 
 			aW[i][J] = max3( Fw, Dw + 0.5*Fw, 0.);
@@ -604,7 +617,7 @@ void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 } /* ucoeff */
 
 /* ################################################################# */
-void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b)
+void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b, struct Tubes *tubes)
 /* ################################################################# */
 {
 /***** Purpose: To calculate the coefficients for the v equation. ******/
@@ -668,6 +681,12 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			aS[I][j] = max3( Fs, Ds + 0.5*Fs, 0.);
 			aN[I][j] = max3(-Fn, Dn - 0.5*Fn, 0.);
 			aPold    = 0.5*(rho[I][J-1] + rho[I][J])*AREAe*AREAn/Dt;
+
+			if ( i == tubes->a[i] && J == tubes->b[J] )															//magic
+				{
+					aW[I][j] = 0;
+					aE[I][j] = 0;
+				}
 
 			/* eq. 8.31 without time dependent terms (see also eq. 5.14): */
 
