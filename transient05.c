@@ -17,8 +17,8 @@
 
 struct Tubes{
 
-	int a[1000];
-	int b[1000];
+	int a[10000];
+	int b[10000];
 };
 
 #include "variables.h"
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	int    iter_u, iter_v, iter_pc, iter_T, iter_eps, iter_k;
 	double du, dv, time, TOTAL_TIME = 10.;
 	
-	struct Tubes tubes;
+	struct Tubes tubes = {0};
 
 	init();
 	bound(&tubes); /* apply boundary conditions */
@@ -261,7 +261,7 @@ void bound(struct Tubes *tubes)
 					{
 						T[i][j] = 500.; // Tube temperature
 						tubes->a[i] = i;
-						tubes->b[i]	= j;
+						tubes->b[j]	= j;
 						
 					}
 				}
@@ -568,7 +568,7 @@ void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
                        2./3. * (rho[I][J]*k[I][J] - rho[I-1][J]*k[I-1][J])/(x[I] - x[I-1]);
 			Su[I][j] *= AREAw*AREAs;
 
-			if ( i == tubes->a[i] && J == tubes->b[J] )															//magic
+			if ( tubes->a[i] > 0 && tubes->b[J] > 0 )															//magic
 			{
 				SP[i][J] = -LARGE;
 			}
@@ -682,10 +682,11 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			aN[I][j] = max3(-Fn, Dn - 0.5*Fn, 0.);
 			aPold    = 0.5*(rho[I][J-1] + rho[I][J])*AREAe*AREAn/Dt;
 
-			if ( i == tubes->a[i] && J == tubes->b[J] )															//magic
+			if ( tubes->a[I] > 0 && tubes->b[j] > 0  )															//magic
 				{
 					aW[I][j] = 0;
 					aE[I][j] = 0;
+
 				}
 
 			/* eq. 8.31 without time dependent terms (see also eq. 5.14): */
