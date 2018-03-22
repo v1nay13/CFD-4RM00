@@ -15,12 +15,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-struct Tubes{
-
-	int a[10000];
-	int b[10000];
-};
-
 #include "variables.h"
 #include "constants.h"
 #include "functions.h"
@@ -31,26 +25,25 @@ int main(int argc, char *argv[])
 {
 	int    iter_u, iter_v, iter_pc, iter_T, iter_eps, iter_k;
 	double du, dv, time, TOTAL_TIME = 10.;
-	
-	struct Tubes tubes = {0};
 
 	init();
-	bound(&tubes); /* apply boundary conditions */
-
+	bound(); /* apply boundary conditions */
+	getTS();
 	for (time = Dt; time <= TOTAL_TIME; time += Dt) {
 		iter = 0; 
 		while (iter < MAX_ITER && SMAX > SMAXneeded && SAVG > SAVGneeded) { /* outer iteration loop */
-
+			
+			
 			derivatives();
-			ucoeff(aE, aW, aN, aS, aP, b, &tubes);
+			ucoeff(aE, aW, aN, aS, aP, b);
 			for (iter_u = 0; iter_u < U_ITER; iter_u++)
 				solve(u, b, aE, aW, aN, aS, aP);
 
-			vcoeff(aE, aW, aN, aS, aP, b, &tubes);
+			vcoeff(aE, aW, aN, aS, aP, b);
 			for (iter_v = 0; iter_v < V_ITER; iter_v++)
 				solve(v, b, aE, aW, aN, aS, aP);
 
-			bound(&tubes);
+			bound();
 			pccoeff(aE, aW, aN, aS, aP, b);
 			for (iter_pc = 0; iter_pc < PC_ITER; iter_pc++)
 				solve(pc, b, aE, aW, aN, aS, aP);
@@ -71,7 +64,7 @@ int main(int argc, char *argv[])
 
 			viscosity();
 
-			bound(&tubes);
+			bound();
 			storeresults(); /* Store data at current time level in arrays for "old" data*/
 
 			iter++;
@@ -174,6 +167,7 @@ void init(void)
 			v      [I][j] = 0.;       /* Velocity in y-direction */
 			p      [I][J] = 0.;       /* Relative pressure */
 			T      [I][J] = 273.;     /* Temperature */
+			P	   [I][J] = 0;
 			k      [I][J] = 1e-3;     /* k */
 			eps    [I][J] = 1e-4;     /* epsilon */
 			uplus  [I][J] = 1.;                                            /* uplus */
@@ -181,7 +175,7 @@ void init(void)
 			yplus2 [I][J] = sqrt(rho[I][J] * u[I][J] / mu[I][J]) * (y[NPJ+1] - y[NPJ]);   /* yplus2 */
 			yplus  [I][J] = 1.;                                            /* yplus*/
 			tw     [I][J] = 5.;                                                /* tw */
-			rho    [I][J] = 1.0;      /* Density */
+			rho    [I][J] = 1000.0;      /* Density */
 			mu     [I][J] = 2.E-5;    /* Viscosity */
 			Cp     [I][J] = 1013.;     /* J/(K*kg) Heat capacity - assumed constant for this problem */
 			Gamma  [I][J] = 0.025/Cp[I][J]; /* Thermal conductivity divided by heat capacity */
@@ -205,20 +199,18 @@ void init(void)
 } /* init */
 
 /* ################################################################# */
-void bound(struct Tubes *tubes)
+void bound(void)
 /* ################################################################# */
 {
 /***** Purpose: Specify boundary conditions for a calculation ******/
 	int    I, J, i, j, column, row, nRow;
 
-	float distance_x, distance_y, d, distance_begin_y;					// distance from origin to point.
-
-	/* Fixed temperature at the upper and lower wall */
+		float distance_x, distance_y, d, distance_begin_y;    /* Fixed temperature at the upper and lower wall */
 
 	for (J = 0; J <= NPJ + 1; J++) {
 		/* Temperature at the walls in Kelvin */
-//		u[1][J] = U_IN; /* inlet */
-		u[1][J] = U_IN*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX)); /* inlet */
+		u[1][J] = U_IN; /* inlet */
+		//u[1][J] = U_IN*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX)); /* inlet */
 	} /* for J */
 
 	for (I = 0; I <= NPI + 1; I++) {
@@ -226,55 +218,7 @@ void bound(struct Tubes *tubes)
 		T[I][0] = 300.; /* bottom wall */
 		T[I][NPJ+1] = 300.; /* top wall */
 	} /* for J */
-
-
-	
-		// Fixed temperature of Tubes. ***added code
-
-	
-		for ( column = 0; column <= 4; column++)	//tube column loop
-			{	
-				distance_x = Distance_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
-
-				if ( column == 0 || column == 2 )
-				{
-					nRow = 2;
-					distance_begin_y = Distance_begin_y0;
-				}
-
-				else
-				{
-					nRow = 3;
-					distance_begin_y = Distance_begin_y1;
-				}
-
-				for ( row = 0; row <= nRow; row++)			// tube row in the column loop
-				{
-					distance_y = distance_begin_y + (row*Separation_y);	//Distance of center in Y coord from origin
-
-					if (distance_x < Distance_end_x && distance_y < Distance_end_y)
-					{
-						for ( i = 0; i < NPI + 1; i++) 		//loop for x coordinate
-						{
-							for ( j = 0; j < NPJ + 1; j++)	//loop for y coordinate
-							{
-								d = sqrt(((distance_x - x[i])*(distance_x - x[i])) + ((distance_y - y[j])*(distance_y - y[j])));
-
-								if ( d <= Radius )
-								{
-									T[i][j] = 500.; // Source Term of velocity at that node
-									tubes->a[i] = i;
-									tubes->b[j]	= j;
-								}
-							}
-						}
-					}
-				}
-			} // end tube temperature boundary
-
-
-
-
+ 
 	globcont();
 
 	/* Velocity and temperature gradient at outlet = zero: */
@@ -297,7 +241,72 @@ void bound(struct Tubes *tubes)
 		eps[0][J] = pow(Cmu,0.75)*pow(k[0][J],1.5)/(0.07*YMAX*0.5); /* inlet */
 	} /* for J */
 
+
+	for ( i = 0; i < NPI + 1; i++) 		//loop for x coordinate
+	{
+		for ( j = 0; j < NPJ + 1; j++)	//loop for y coordinate
+		{
+
+			if ( P[i][j] == 1)
+			{
+				T[i][j] = 500.;
+			}
+		}
+	}
+
+
 } /* bound */
+
+
+/* ################################################################ */
+// Fixed temperature of Tubes. ***added code
+/* ################################################################ */
+void getTS (void)
+	{	
+		int    I, J, i, j, column, row, nRow;
+
+		float distance_x, distance_y, d, distance_begin_y;
+
+		for ( column = 0; column < 4; column++)	//tube column loop
+		{	
+			distance_x = Distance_begin_x + (column*Separation_x);	// Distance of center in X coord from origin
+
+			if ( column == 0 || column == 2 )
+				{
+					nRow = 2;
+					distance_begin_y = Distance_begin_y0;
+				}
+
+			else
+				{
+					nRow = 3;
+					distance_begin_y = Distance_begin_y1;
+				}
+
+			for ( row = 0; row <= nRow; row++)			// tube row in the column loop
+				{
+					distance_y = distance_begin_y + (row*Separation_y);	//Distance of center in Y coord from origin
+
+					if (distance_x < Distance_end_x && distance_y < Distance_end_y)
+					{
+						for ( i = 0; i < NPI + 1; i++) 		//loop for x coordinate
+						{
+							for ( j = 0; j < NPJ + 1; j++)	//loop for y coordinate
+							{
+								d = sqrt(((distance_x - x[i])*(distance_x - x[i])) + ((distance_y - y[j])*(distance_y - y[j])));
+
+								if ( d <= Radius )
+								{
+									P[i][j] = 1;
+								}
+							}
+						}
+					}
+				}
+		} // end tube temperature boundary
+	}
+
+
 
 
 /* ################################################################# */
@@ -510,7 +519,7 @@ void conv(void)
 } /* conv */
 
 /* ################################################################# */
-void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b, struct Tubes *tubes)
+void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b)
 /* ################################################################# */
 {
 /***** Purpose: To calculate the coefficients for the u equation. ******/
@@ -566,6 +575,7 @@ void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 					SP[i][J]= -mu[I][J]*AREAs/(0.5*AREAw);
 				else
 					SP[i][J]=-rho[I][J] * pow(Cmu, 0.25) * sqrt(k[I][J]) / uplus[I][J] * AREAs;
+
 			else
 				SP[i][J] = 0.;
             
@@ -573,11 +583,15 @@ void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			           (mun        *dvdx[i][j+1] - mus        *dvdx[i][j]) / (y_v[j+1] - y_v[j]) -
                        2./3. * (rho[I][J]*k[I][J] - rho[I-1][J]*k[I-1][J])/(x[I] - x[I-1]);
 			Su[I][j] *= AREAw*AREAs;
+			
 
-			if ( tubes->a[i] > 0 && tubes->b[J] > 0 )															//magic
+
+			if ( P[i][J] == 1 )															//magic
 			{
 				SP[i][J] = -LARGE;
+				Sup[
 			}
+
 			/* The coefficients (hybrid differencing sheme) */
 
 			aW[i][J] = max3( Fw, Dw + 0.5*Fw, 0.);
@@ -623,7 +637,7 @@ void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 } /* ucoeff */
 
 /* ################################################################# */
-void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b, struct Tubes *tubes)
+void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b)
 /* ################################################################# */
 {
 /***** Purpose: To calculate the coefficients for the v equation. ******/
@@ -680,9 +694,6 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 
 			Su[I][j] *= AREAw*AREAs;
 
-
-
-
 			/* The coefficients (hybrid differencing scheme) */
 
 			aW[I][j] = max3( Fw, Dw + 0.5*Fw, 0.);
@@ -691,11 +702,10 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			aN[I][j] = max3(-Fn, Dn - 0.5*Fn, 0.);
 			aPold    = 0.5*(rho[I][J-1] + rho[I][J])*AREAe*AREAn/Dt;
 			
-			if ( tubes->a[I] > 0 && tubes->b[j] > 0  )															//magic
+			if ( P[I][j] == 1 )															//magic
 				{
 					aW[I][j] = 0;
 					aE[I][j] = 0;
-
 				}
 
 
@@ -921,6 +931,12 @@ void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			aS[I][J] = max3( Fs, Ds + 0.5*Fs, 0.);
 			aN[I][J] = max3(-Fn, Dn - 0.5*Fn, 0.);
 			aPold    = rho[I][J]*AREAe*AREAn/Dt;
+
+			if ( P[I][J] == 1 )															//magic
+				{
+					aW[I][J] = 0;
+					aE[I][J] = 0;
+				}
 
 			if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
 				SP[I][J] = -LARGE;
@@ -1352,6 +1368,7 @@ void memalloc(void)
 	pc     = double_2D_matrix(NPI + 2, NPJ + 2);
 	p      = double_2D_matrix(NPI + 2, NPJ + 2);
 	T      = double_2D_matrix(NPI + 2, NPJ + 2);
+	P	   = double_2D_matrix(NPI + 2, NPJ + 2);
 	rho    = double_2D_matrix(NPI + 2, NPJ + 2);
 	mu     = double_2D_matrix(NPI + 2, NPJ + 2);
 	mut    = double_2D_matrix(NPI + 2, NPJ + 2);

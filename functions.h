@@ -10,12 +10,13 @@ extern void grid(void);
 extern void gridbound(void);
 extern void init(void);
 
-extern void bound( struct Tubes *);
+extern void getTS (void);
+extern void bound(void);
 extern void globcont(void);
 extern void derivatives(void);
 
-extern void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b, struct Tubes *);
-extern void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b, struct Tubes *);
+extern void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);
+extern void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);
 extern void pccoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);
 extern void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);
 extern void epscoeff(double **aE, double **aW, double **aN, double **aS, double **aP, double **b);

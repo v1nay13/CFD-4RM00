@@ -9,6 +9,7 @@ double **v;
 double **pc;
 double **p;
 double **T;
+double **P;
 double **rho;
 double **mu;
 double **mut;
