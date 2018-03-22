@@ -166,7 +166,7 @@ void init(void)
 			u      [i][J] = U_IN*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX));     /* Velocity in x-direction */
 			v      [I][j] = 0.;       /* Velocity in y-direction */
 			p      [I][J] = 0.;       /* Relative pressure */
-			T      [I][J] = 273.;     /* Temperature */
+			T      [I][J] = 300.;     /* Temperature */
 			P	   [I][J] = 0;
 			k      [I][J] = 1e-3;     /* k */
 			eps    [I][J] = 1e-4;     /* epsilon */
@@ -589,7 +589,6 @@ void ucoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			if ( P[i][J] == 1 )															//magic
 			{
 				SP[i][J] = -LARGE;
-				Sup[
 			}
 
 			/* The coefficients (hybrid differencing sheme) */
@@ -938,10 +937,10 @@ void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 					aE[I][J] = 0;
 				}
 
-			if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
+			/*if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
 				SP[I][J] = -LARGE;
 				Su[I][J] = LARGE*373.;
-			}
+			}*/
 
 			/* eq. 8.31 with time dependent terms (see also eq. 5.14): */
 
