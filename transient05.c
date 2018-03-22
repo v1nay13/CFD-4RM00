@@ -209,8 +209,8 @@ void bound(void)
 
 	for (J = 0; J <= NPJ + 1; J++) {
 		/* Temperature at the walls in Kelvin */
-		u[1][J] = U_IN; /* inlet */
-		//u[1][J] = U_IN*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX)); /* inlet */
+		//u[1][J] = U_IN; /* inlet */
+		u[1][J] = U_IN*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX)); /* inlet */
 	} /* for J */
 
 	for (I = 0; I <= NPI + 1; I++) {
@@ -708,8 +708,6 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 					aE[I][j] = 0;
 				}
 
-
-
 			/* eq. 8.31 without time dependent terms (see also eq. 5.14): */
 
 			aP[I][j] = aW[I][j] + aE[I][j] + aS[I][j] + aN[I][j] + Fe - Fw + Fn - Fs - SP[I][J] + aPold;
@@ -939,7 +937,7 @@ void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 
 			if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
 				SP[I][J] = -LARGE;
-				Su[I][J] = LARGE*373.;
+				Su[I][J] = LARGE*300.;
 			}
 
 			/* eq. 8.31 with time dependent terms (see also eq. 5.14): */

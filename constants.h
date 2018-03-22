@@ -1,5 +1,5 @@
-#define NPI        80        /* number of grid cells in x-direction [-]  */
-#define NPJ        40        /* number of grid cells in y-direction [-] */
+#define NPI        120        /* number of grid cells in x-direction [-]  */
+#define NPJ        60        /* number of grid cells in y-direction [-] */
 #define XMAX       270      /* width of the domain [m] */ 
 #define YMAX       120      /* height of the domain [m] */
 #define PI         3.1415927 /* value of pi [-] */
@@ -15,7 +15,7 @@
 #define LARGE      1E30      /* arbitrary very large value [-] */
 #define SMALL      1E-30     /* arbitrary very small value [-] */
 #define P_ATM      101000.   /* athmospheric pressure [Pa] */
-#define U_IN       16        /* in flow velocity [m/s] */
+#define U_IN       5       /* in flow velocity [m/s] */
 
 #define Cmu        0.09
 #define sigmak       1.
