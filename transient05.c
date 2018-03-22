@@ -703,9 +703,11 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			
 			if ( P[I][j] == 1 )															//magic
 				{
+					SP[I][J] = -LARGE;
 					aW[I][j] = 0;
 					aE[I][j] = 0;
 				}
+
 
 
 			/* eq. 8.31 without time dependent terms (see also eq. 5.14): */
@@ -778,6 +780,7 @@ void pccoeff(double **aE, double **aW, double **aN, double **aS, double **aP, do
 
 			SP[I][J] = 0.;
 			Su[I][J] = 0.;
+
 			
 			b[I][J] += Su[I][J];
 
@@ -790,6 +793,7 @@ void pccoeff(double **aE, double **aW, double **aN, double **aS, double **aP, do
 			aW[I][J] = 0.5*(rho[I-1][J  ] + rho[I  ][J  ])*d_u[i  ][J  ]*AREAw;
 			aN[I][J] = 0.5*(rho[I  ][J  ] + rho[I  ][J+1])*d_v[I  ][j+1]*AREAn;
 			aS[I][J] = 0.5*(rho[I  ][J-1] + rho[I  ][J  ])*d_v[I  ][j  ]*AREAs;
+
 
 			aP[I][J] = aE[I][J] + aW[I][J] + aN[I][J] + aS[I][J] - SP[I][J];
 
@@ -923,6 +927,7 @@ void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			SP[I][J] = 0.;
 			Su[I][J] = 0.;
 
+
 			/* The coefficients (hybrid differencing scheme) */
 
 			aW[I][J] = max3( Fw, Dw + 0.5*Fw, 0.);
@@ -931,11 +936,6 @@ void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			aN[I][J] = max3(-Fn, Dn - 0.5*Fn, 0.);
 			aPold    = rho[I][J]*AREAe*AREAn/Dt;
 
-			if ( P[I][J] == 1 )															//magic
-				{
-					aW[I][J] = 0;
-					aE[I][J] = 0;
-				}
 
 			/*if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
 				SP[I][J] = -LARGE;
@@ -1025,6 +1025,7 @@ void epscoeff(double **aE, double **aW, double **aN, double **aS, double **aP, d
 				Su[I][J] = C1eps * eps[I][J] / k[I][J] * 2. * mut[I][J] * E2[I][J];
 				SP[I][J] = -C2eps * rho[I][J] * eps[I][J] / (k[I][J] + SMALL);
 			}
+
                                   
 			Su[I][J] *= AREAw*AREAs;
 			SP[I][J] *= AREAw*AREAs;
