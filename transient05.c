@@ -175,7 +175,7 @@ void init(void)
 			yplus2 [I][J] = sqrt(rho[I][J] * u[I][J] / mu[I][J]) * (y[NPJ+1] - y[NPJ]);   /* yplus2 */
 			yplus  [I][J] = 1.;                                            /* yplus*/
 			tw     [I][J] = 5.;                                                /* tw */
-			rho    [I][J] = 1000.0;      /* Density */
+			rho    [I][J] = 1.0;      /* Density */
 			mu     [I][J] = 2.E-5;    /* Viscosity */
 			Cp     [I][J] = 1013.;     /* J/(K*kg) Heat capacity - assumed constant for this problem */
 			Gamma  [I][J] = 0.025/Cp[I][J]; /* Thermal conductivity divided by heat capacity */
@@ -937,10 +937,10 @@ void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			aPold    = rho[I][J]*AREAe*AREAn/Dt;
 
 
-			/*if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
+			if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
 				SP[I][J] = -LARGE;
 				Su[I][J] = LARGE*373.;
-			}*/
+			}
 
 			/* eq. 8.31 with time dependent terms (see also eq. 5.14): */
 
