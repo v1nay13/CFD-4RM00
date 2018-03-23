@@ -1226,7 +1226,7 @@ void output(void)
 /***** Purpose: Creating result table ******/
 	int    I, J, i, j;
 	double ugrid, vgrid,stream,vorticity;
-	FILE   *fp, *str, *velu, *velv, *vort;
+	FILE   *fp, *str, *velu, *velv, *vort, *fpt;
 
 /* Plot all results in output.dat */
 
@@ -1246,6 +1246,20 @@ void output(void)
 	} /* for I */
 
 	fclose(fp);
+
+	// exit temperature data output
+
+	fpt = fopen("exit_temp.txt","w");
+
+	for (j = 0 ; j <=NPJ ; j++)
+	{
+		fprintf( fpt,"%0.5e \n",T[(NPI * LENGTH)/XMAX][j]);
+	
+	} /* for j */
+
+	fclose(fpt);
+
+	//
 
 /* Plot vorticity in vort.dat */
 
