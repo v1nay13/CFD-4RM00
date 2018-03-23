@@ -163,7 +163,7 @@ void init(void)
 		i = I;
 		for (J = 0; J <= NPJ + 1; J++) {
 			j = J;
-			u      [i][J] = U_IN*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX));     /* Velocity in x-direction */
+			u      [i][J] = U_IN; //*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX));    /* Velocity in x-direction */
 			v      [I][j] = 0.;       /* Velocity in y-direction */
 			p      [I][J] = 0.;       /* Relative pressure */
 			T      [I][J] = 300.;     /* Temperature */
@@ -175,10 +175,10 @@ void init(void)
 			yplus2 [I][J] = sqrt(rho[I][J] * u[I][J] / mu[I][J]) * (y[NPJ+1] - y[NPJ]);   /* yplus2 */
 			yplus  [I][J] = 1.;                                            /* yplus*/
 			tw     [I][J] = 5.;                                                /* tw */
-			rho    [I][J] = 1.0;      /* Density */
+			rho    [I][J] = 1.1614;      /* Density */
 			mu     [I][J] = 2.E-5;    /* Viscosity */
-			Cp     [I][J] = 1013.;     /* J/(K*kg) Heat capacity - assumed constant for this problem */
-			Gamma  [I][J] = 0.025/Cp[I][J]; /* Thermal conductivity divided by heat capacity */
+			Cp     [I][J] = 1007.;     /* J/(K*kg) Heat capacity - assumed constant for this problem */
+			Gamma  [I][J] = 0.0263/Cp[I][J]; /* Thermal conductivity divided by heat capacity */
 
 			u_old  [i][J] = u[i][J];  /* Velocity in x-direction old timestep */
 			v_old  [I][j] = v[I][j];  /* Velocity in y-direction old timestep */
@@ -209,8 +209,8 @@ void bound(void)
 
 	for (J = 0; J <= NPJ + 1; J++) {
 		/* Temperature at the walls in Kelvin */
-		//u[1][J] = U_IN; /* inlet */
-		u[1][J] = U_IN*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX)); /* inlet */
+		u[1][J] = U_IN; /* inlet */
+		//u[1][J] = U_IN*1.5*(1.-sqr(2.*(y[J]-YMAX/2.)/YMAX)); /* inlet */
 	} /* for J */
 
 	for (I = 0; I <= NPI + 1; I++) {
@@ -686,6 +686,9 @@ void vcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 
 			muw = 0.25*(mueff[I][J] + mueff[I-1][J] + mueff[I][J-1] + mueff[I-1][J-1]);
 			mue = 0.25*(mueff[I][J] + mueff[I+1][J] + mueff[I][J-1] + mueff[I+1][J-1]);
+
+			 //printf("%e\n",x_u[i+1] - x_u[i]);
+
 			SP[I][j] = 0.;
 			Su[I][j] = (mueff[I][J]*dvdy[I][J] - mueff[I][J-1]*dvdy[I][J-1])/(y[J] - y[J-1]) + 
 			           (mue*dudy[i+1][j] - muw*dudy[i][j])/(x_u[i+1] - x_u[i]) - 
@@ -935,10 +938,10 @@ void Tcoeff(double **aE, double **aW, double **aN, double **aS, double **aP, dou
 			aPold    = rho[I][J]*AREAe*AREAn/Dt;
 
 
-			if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
+			/*if (I > 11*NPI/200 && I < 18*NPI/200 && J > 2*NPJ/5 && J < 3*NPJ/5){
 				SP[I][J] = -LARGE;
 				Su[I][J] = LARGE*300.;
-			}
+			}*/
 
 			/* eq. 8.31 with time dependent terms (see also eq. 5.14): */
 
