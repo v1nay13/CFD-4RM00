@@ -1,7 +1,7 @@
 #define NPI        200        /* number of grid cells in x-direction [-]  */
 #define NPJ        60        /* number of grid cells in y-direction [-] */
-#define XMAX       400.E-2      /* width of the domain [m] */ 
-#define YMAX       120.E-2      /* height of the domain [m] */
+#define XMAX       400.E-3      /* width of the domain [m] */ 
+#define YMAX       120.E-3      /* height of the domain [m] */
 #define PI         3.1415927 /* value of pi [-] */
 #define MAX_ITER   100       /* maximum number of outer iterations [-] */
 #define U_ITER     1         /* number of Newton iterations for u equation [-] */
@@ -27,13 +27,13 @@
 #define Ti         0.04
 
 
-#define LENGTH	   270.E-2 			/*[m]*/
-#define Radius     12.5E-2		 /* radius of circle [m] */   
-#define Separation_x   40.E-2		 /* distance between centers of circles X-axis*/
-#define Separation_y   35.E-2		/* distance between centers of circles Y-axis */
+#define LENGTH	   270.E-3 			/*[m]*/
+#define Radius     12.5E-3		 /* radius of circle [m] */   
+#define Separation_x   40.E-3		 /* distance between centers of circles X-axis*/
+#define Separation_y   35.E-3		/* distance between centers of circles Y-axis */
 #define NTUBE	   10			 /* number of tubes */ 
-#define Distance_begin_x   62.5E-2 	// space before first tube [m], not from center
-#define Distance_begin_y0  42.5E-2   // first row starting
-#define Distance_begin_y1  25.0E-2	// second row starting
-#define Distance_end_y	   105E-2
-#define Distance_end_x     195E-2	// distance from last tube [m], not from center
+#define Distance_begin_x   62.5E-3 	// space before first tube [m], not from center
+#define Distance_begin_y0  42.5E-3   // first row starting
+#define Distance_begin_y1  25.0E-3	// second row starting
+#define Distance_end_y	   105E-3
+#define Distance_end_x     195E-3	// distance from last tube [m], not from center
