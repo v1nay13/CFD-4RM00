@@ -194,7 +194,7 @@ void init(void)
 	relax_u   = 0.1;             /* See eq. 6.36 */
 	relax_v   = relax_u;       /* See eq. 6.37 */
 	relax_pc  = 0.2 - relax_u; /* See eq. 6.33 */
-	relax_T   = 1.0;  /* Relaxation factor for temperature */
+	relax_T   = 0.4;  /* Relaxation factor for temperature */
 
 } /* init */
 
@@ -203,9 +203,7 @@ void bound(void)
 /* ################################################################# */
 {
 /***** Purpose: Specify boundary conditions for a calculation ******/
-	int    I, J, i, j, column, row, nRow;
-
-		float distance_x, distance_y, d, distance_begin_y;    /* Fixed temperature at the upper and lower wall */
+	int    I, J, i, j;
 
 	for (J = 0; J <= NPJ + 1; J++) {
 		/* Temperature at the walls in Kelvin */
@@ -263,7 +261,7 @@ void bound(void)
 /* ################################################################ */
 void getTS (void)
 	{	
-		int    I, J, i, j, column, row, nRow;
+		int  i, j, column, row, nRow;
 
 		float distance_x, distance_y, d, distance_begin_y;
 
