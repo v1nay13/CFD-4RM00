@@ -191,9 +191,9 @@ void init(void)
 
 	/* Setting the relaxation parameters */
 
-	relax_u   = 0.8;             /* See eq. 6.36 */
+	relax_u   = 0.1;             /* See eq. 6.36 */
 	relax_v   = relax_u;       /* See eq. 6.37 */
-	relax_pc  = 1.1 - relax_u; /* See eq. 6.33 */
+	relax_pc  = 0.2 - relax_u; /* See eq. 6.33 */
 	relax_T   = 1.0;  /* Relaxation factor for temperature */
 
 } /* init */
@@ -1224,7 +1224,7 @@ void output(void)
 /* ################################################################# */
 {
 /***** Purpose: Creating result table ******/
-	int    I, J, i, j;
+	int    I, J, i, j, Tout;
 	double ugrid, vgrid,stream,vorticity;
 	FILE   *fp, *str, *velu, *velv, *vort, *fpt;
 
@@ -1239,7 +1239,7 @@ void output(void)
 			ugrid = 0.5*(u[i][J]+u[i+1][J  ]);
 			vgrid = 0.5*(v[I][j]+v[I  ][j+1]);
 			fprintf(fp, "%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\t%11.5e\n",
-			             x[I], y[J], ugrid, vgrid, p[I][J], T[I][J], rho[I][J], mu[I][J], Gamma[I][J], k[I][J], eps[I][J], uplus[I][J], yplus[I][J], yplus1[I][J], yplus2[I][J]);
+			             x[I], y[J], ugrid*1.E-3, vgrid*1.E-3, p[I][J], T[I][J], rho[I][J], mu[I][J], Gamma[I][J], k[I][J], eps[I][J], uplus[I][J], yplus[I][J], yplus1[I][J], yplus2[I][J]);
 //			             1     2     3      4      5        6        7          8         9            10       11         12           13           14            15
 		} /* for J */
 		fprintf(fp, "\n");
@@ -1251,9 +1251,11 @@ void output(void)
 
 	fpt = fopen("exit_temp.txt","w");
 
+	Tout = (NPI*LENGTH)/XMAX;
+
 	for (j = 0 ; j <=NPJ ; j++)
 	{
-		fprintf( fpt,"%0.5e \n",T[(NPI * LENGTH)/XMAX][j]);
+		fprintf( fpt,"%0.5e \n",T[Tout][j]);
 	
 	} /* for j */
 
